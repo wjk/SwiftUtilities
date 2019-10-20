@@ -6,5 +6,6 @@ let package = Package(
 	targets: [
 		.target(name: "SwiftKVO"),
 		.target(name: "LocalizedString"),
+		.target(name: "CommandLineExtensions"),
 	]
 )
