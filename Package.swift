@@ -4,5 +4,6 @@ import PackageDescription
 let package = Package(
 	name: "SwiftUtilities",
 	targets: [
+		.target(name: "SwiftKVO"),
 	]
 )
