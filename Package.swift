@@ -5,5 +5,6 @@ let package = Package(
 	name: "SwiftUtilities",
 	targets: [
 		.target(name: "SwiftKVO"),
+		.target(name: "LocalizedString"),
 	]
 )
