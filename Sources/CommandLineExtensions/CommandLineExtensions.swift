@@ -66,7 +66,7 @@ public struct _EnvironmentAccessor {
 
 public extension CommandLine {
 	static var standardError = _StandardErrorOutputStream()
-	static let environment = _EnvironmentAccessor()
+	static var environment = _EnvironmentAccessor()
 
 	static var workingDirectory: URL {
 		get {
