@@ -88,7 +88,7 @@ public enum SwiftKVO {
 
 		public func addObserver<TProperty>(keyPath: KeyPath<TObject, TProperty>, options: Set<ChangeType>, callback: @escaping (ChangeType, TProperty) -> Void) -> Observer {
 			guard let owner = owner else {
-				fatalError("owner died before its KVO.Proxy did")
+				fatalError("owner not set or was released")
 			}
 
 			nextId += 1
@@ -109,7 +109,7 @@ public enum SwiftKVO {
 
 		public func willChangeValue<TProperty>(keyPath: KeyPath<TObject, TProperty>) {
 			guard let owner = owner else {
-				fatalError("owner died before its KVO.Proxy did")
+				fatalError("owner not set or was released")
 			}
 
 			if let cacheDict = cache[keyPath] {
@@ -129,7 +129,7 @@ public enum SwiftKVO {
 
 		public func didChangeValue<TProperty>(keyPath: KeyPath<TObject, TProperty>) {
 			guard let owner = owner else {
-				fatalError("owner died before its KVO.Proxy did")
+				fatalError("owner not set or was released")
 			}
 
 			if let cacheDict = cache[keyPath] {
