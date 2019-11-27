@@ -20,11 +20,7 @@
 
 import Foundation
 
-public final class SwiftKVO {
-	private init() {
-		// This class should not be initialized.
-	}
-
+public enum SwiftKVO {
 	internal typealias ObserverToken = UInt
 	internal typealias ProxyData = (options: Set<ChangeType>, callbackHolder: AnyObject)
 
