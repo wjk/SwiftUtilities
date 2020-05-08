@@ -231,30 +231,43 @@ public enum Authorization {
 			throw AuthorizationError.message("Failed to convert authorization name to C string")
 		}
 
-		var envItem: AuthorizationItem
-		var authEnvironment: AuthorizationEnvironment
-
 		if let promptText = promptText {
 			guard let promptCString = (promptText as NSString).utf8String else {
 				throw AuthorizationError.message("Failed to convert prompt text to C string")
 			}
 
 			let promptCStringPtr = UnsafeMutableRawPointer(mutating: promptCString)
-			envItem = AuthorizationItem(name: kAuthorizationEnvironmentPrompt, valueLength: promptText.lengthOfBytes(using: .utf8), value: promptCStringPtr, flags: 0)
+			var envItem = kAuthorizationEnvironmentPrompt.withCString { promptStr in
+				AuthorizationItem(name: promptStr, valueLength: promptText.lengthOfBytes(using: .utf8), value: promptCStringPtr, flags: 0)
+			}
 
-			authEnvironment = AuthorizationEnvironment(count: 1, items: &envItem)
+			try withUnsafeMutablePointer(to: &envItem, { envItemPtr in
+				var authEnvironment = AuthorizationEnvironment(count: 1, items: envItemPtr)
+
+				// Create an AuthorizationItem using the authorization right name
+				var authItem = AuthorizationItem(name: authRightName, valueLength: 0, value: UnsafeMutableRawPointer(bitPattern: 0), flags: 0)
+
+				// Create the AuthorizationRights for using the AuthorizationItem
+				try withUnsafeMutablePointer(to: &authItem) { authItemPtr in
+					var authRights = AuthorizationRights(count: 1, items: authItemPtr)
+
+					// Check if the user is authorized for the AuthorizationRights.
+					// If not the user might be asked for an admin credential.
+					try executeAuthorizationFunction { AuthorizationCopyRights(authRef, &authRights, &authEnvironment, [.extendRights, .interactionAllowed], nil) }
+				}
+			})
 		} else {
-			authEnvironment = AuthorizationEnvironment(count: 0, items: nil)
+			// Create an AuthorizationItem using the authorization right name
+			var authItem = AuthorizationItem(name: authRightName, valueLength: 0, value: UnsafeMutableRawPointer(bitPattern: 0), flags: 0)
+
+			// Create the AuthorizationRights for using the AuthorizationItem
+			try withUnsafeMutablePointer(to: &authItem) { authItemPtr in
+				var authRights = AuthorizationRights(count: 1, items: authItemPtr)
+
+				// Check if the user is authorized for the AuthorizationRights.
+				// If not the user might be asked for an admin credential.
+				try executeAuthorizationFunction { AuthorizationCopyRights(authRef, &authRights, nil, [.extendRights, .interactionAllowed], nil) }
+			}
 		}
-
-		// Create an AuthorizationItem using the authorization right name
-		var authItem = AuthorizationItem(name: authRightName, valueLength: 0, value: UnsafeMutableRawPointer(bitPattern: 0), flags: 0)
-
-		// Create the AuthorizationRights for using the AuthorizationItem
-		var authRights = AuthorizationRights(count: 1, items: &authItem)
-
-		// Check if the user is authorized for the AuthorizationRights.
-		// If not the user might be asked for an admin credential.
-		try executeAuthorizationFunction { AuthorizationCopyRights(authRef, &authRights, &authEnvironment, [.extendRights, .interactionAllowed], nil) }
 	}
 }
