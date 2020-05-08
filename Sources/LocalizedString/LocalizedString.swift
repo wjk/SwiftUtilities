@@ -26,7 +26,7 @@ public func localize(_ string: LocalizedStringBuilder, table: String? = nil, bun
 
 public struct LocalizedStringBuilder: ExpressibleByStringInterpolation {
 	public typealias StringLiteralType = String
-	fileprivate typealias InterpolatedValueProvider = () -> CVarArg
+	fileprivate typealias InterpolatedValueProvider = () -> NSString
 
 	private let key: String
 	private let valueProviders: [InterpolatedValueProvider]
@@ -84,11 +84,6 @@ public struct LocalizedStringBuilder: ExpressibleByStringInterpolation {
 				}
 				return string as NSString
 			}
-		}
-
-		public mutating func appendInterpolation(value: Int) {
-			key += "%ld"
-			providers.append { value }
 		}
 	}
 }
