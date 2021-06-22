@@ -174,6 +174,7 @@ public enum Authorization {
 		// Create an AuthorizationExternalForm from it's data representation
 		var authRef: AuthorizationRef?
 		let authRefExtForm: UnsafeMutablePointer<AuthorizationExternalForm> = UnsafeMutablePointer.allocate(capacity: kAuthorizationExternalFormLength * MemoryLayout<AuthorizationExternalForm>.size)
+		defer { authRefExtForm.deallocate() }
 		memcpy(authRefExtForm, data.bytes, data.length)
 
 		// Extract the AuthorizationRef from it's external form
