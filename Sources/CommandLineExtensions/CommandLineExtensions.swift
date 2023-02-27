@@ -70,13 +70,13 @@ public extension CommandLine {
 
 	static var workingDirectory: URL {
 		get {
-			let buffer = UnsafeMutablePointer<Int8>.allocate(capacity: Int(MAXPATHLEN) * MemoryLayout<Int8>.stride)
+			let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(MAXPATHLEN) * MemoryLayout<UInt8>.stride)
 			defer {
 				buffer.deallocate()
 			}
 
 			getcwd(buffer, Int(MAXPATHLEN))
-			let path = String(cString: UnsafePointer<UInt8>(OpaquePointer(buffer)))
+			let path = String(cString: buffer)
 			return URL(fileURLWithPath: path)
 		}
 
