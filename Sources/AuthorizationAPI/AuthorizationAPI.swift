@@ -173,7 +173,7 @@ public enum Authorization {
 	public static func authorizationRef(fromExternalForm data: NSData) throws -> AuthorizationRef? {
 		// Create an AuthorizationExternalForm from it's data representation
 		var authRef: AuthorizationRef?
-		let authRefExtForm: UnsafeMutablePointer<AuthorizationExternalForm> = UnsafeMutablePointer.allocate(capacity: kAuthorizationExternalFormLength * MemoryLayout<AuthorizationExternalForm>.size)
+        let authRefExtForm: UnsafeMutablePointer<AuthorizationExternalForm> = UnsafeMutablePointer.allocate(capacity: Int(kAuthorizationExternalFormLength) * MemoryLayout<AuthorizationExternalForm>.size)
 		defer { authRefExtForm.deallocate() }
 		memcpy(authRefExtForm, data.bytes, data.length)
 
@@ -206,7 +206,7 @@ public enum Authorization {
 		guard var authRefExtForm = try self.emptyAuthorizationExternalForm() else { return nil }
 
 		// Encapsulate the external form AuthorizationRef in an NSData object
-		return NSData(bytes: &authRefExtForm, length: kAuthorizationExternalFormLength)
+        return NSData(bytes: &authRefExtForm, length: Int(kAuthorizationExternalFormLength))
 	}
 
 	// MARK: Verification
