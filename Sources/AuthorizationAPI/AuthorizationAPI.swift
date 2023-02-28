@@ -73,7 +73,25 @@ public struct AuthorizationRight {
 public enum AuthorizationError: Error {
     case canceled
     case denied
+    case status(OSStatus)
     case message(String)
+
+    public var description: String {
+        switch self {
+        case .canceled:
+            return "The authentication dialog was canceled by the user."
+        case .denied:
+            return "Authorization was denied."
+        case .status(let status):
+            if let cfString = SecCopyErrorMessageString(status, nil) {
+                return cfString as String
+            } else {
+                return "Error \(status) (SecCopyErrorMessage failure)"
+            }
+        case .message(let string):
+            return string
+        }
+    }
 }
 
 public enum Authorization {
@@ -157,7 +175,7 @@ public enum Authorization {
             } else if osStatus == errAuthorizationDenied {
                 throw AuthorizationError.denied
             } else {
-                throw AuthorizationError.message(String(describing: SecCopyErrorMessageString(osStatus, nil)))
+                throw AuthorizationError.status(osStatus)
             }
         }
     }
