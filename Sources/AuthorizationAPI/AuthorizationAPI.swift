@@ -289,4 +289,19 @@ public enum Authorization {
             }
         }
     }
+
+    public static func destroyAuthorization(authorizationData: NSData) throws {
+        // Verify that the passed authorizationData looks reasonable
+        guard authorizationData.length == kAuthorizationExternalFormLength else {
+            throw AuthorizationError.message("Invalid Authorization External Form Data")
+        }
+
+        // Convert the external form to an AuthorizationRef
+        guard let authorizationRef = try self.authorizationRef(fromExternalForm: authorizationData) else {
+            throw AuthorizationError.message("Failed to convert the Authorization External Form to an Authorization Reference")
+        }
+
+        // Release the rights held.
+        try executeAuthorizationFunction { AuthorizationFree(authorizationRef, .destroyRights) }
+    }
 }
