@@ -26,8 +26,22 @@ import Security
 
 let kSecCSDefaultFlags = 0
 
-enum CodesignCheckError: Error {
+enum CodesignCheckError: Error, CustomStringConvertible {
+    case status(OSStatus)
     case message(String)
+
+    var description: String {
+        switch self {
+        case .message(let message):
+            return message
+        case .status(let status):
+            if let cfString = SecCopyErrorMessageString(status, nil) {
+                return cfString as String
+            } else {
+                return "Error \(status) (SecCopyErrorMessageString failure)"
+            }
+        }
+    }
 }
 
 public enum CodesignCheck {
@@ -57,7 +71,7 @@ public enum CodesignCheck {
     private static func executeSecFunction(_ secFunction: () -> (OSStatus) ) throws {
         let osStatus = secFunction()
         guard osStatus == errSecSuccess else {
-            throw CodesignCheckError.message(String(describing: SecCopyErrorMessageString(osStatus, nil)))
+            throw CodesignCheckError.status(osStatus)
         }
     }
 
