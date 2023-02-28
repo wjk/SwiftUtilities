@@ -20,15 +20,15 @@
 
 import Foundation
 
-public struct _StandardErrorOutputStream: TextOutputStream {
+public final class _StandardErrorOutputStream: TextOutputStream {
     fileprivate init() {}
 
-    public mutating func write(_ string: String) {
+    public func write(_ string: String) {
         fputs(string, stderr)
     }
 }
 
-public struct _EnvironmentAccessor {
+public final class _EnvironmentAccessor {
     fileprivate init() {}
 
     public subscript(name: String) -> String? {
@@ -65,8 +65,8 @@ public struct _EnvironmentAccessor {
 }
 
 public extension CommandLine {
-    static var standardError = _StandardErrorOutputStream()
-    static var environment = _EnvironmentAccessor()
+    static let standardError = _StandardErrorOutputStream()
+    static let environment = _EnvironmentAccessor()
 
     static var workingDirectory: URL {
         get {
