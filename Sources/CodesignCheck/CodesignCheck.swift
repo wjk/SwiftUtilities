@@ -26,11 +26,11 @@ import Security
 
 let kSecCSDefaultFlags = 0
 
-enum CodesignCheckError: Error, CustomStringConvertible {
+enum CodesignCheckError: LocalizedError {
     case status(OSStatus)
     case message(String)
 
-    var description: String {
+    var failureReason: String? {
         switch self {
         case .message(let message):
             return message

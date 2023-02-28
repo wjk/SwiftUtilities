@@ -70,13 +70,13 @@ public struct AuthorizationRight {
 
 // MARK: -
 
-public enum AuthorizationError: Error {
+public enum AuthorizationError: LocalizedError {
     case canceled
     case denied
     case status(OSStatus)
     case message(String)
 
-    public var description: String {
+    public var failureReason: String? {
         switch self {
         case .canceled:
             return "The authentication dialog was canceled by the user."
